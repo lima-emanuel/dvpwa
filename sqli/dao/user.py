@@ -1,6 +1,6 @@
-from hashlib import md5
 from typing import NamedTuple, Optional
 
+import bcrypt
 from aiopg import Connection
 
 
@@ -21,8 +21,8 @@ class User(NamedTuple):
     async def get(conn: Connection, id_: int):
         async with conn.cursor() as cur:
             await cur.execute(
-                'SELECT id, first_name, middle_name, last_name, '
-                'username, pwd_hash, is_admin FROM users WHERE id = %s',
+                "SELECT id, first_name, middle_name, last_name, "
+                "username, pwd_hash, is_admin FROM users WHERE id = %s",
                 (id_,),
             )
             return User.from_raw(await cur.fetchone())
@@ -31,11 +31,11 @@ class User(NamedTuple):
     async def get_by_username(conn: Connection, username: str):
         async with conn.cursor() as cur:
             await cur.execute(
-                'SELECT id, first_name, middle_name, last_name, '
-                'username, pwd_hash, is_admin FROM users WHERE username = %s',
+                "SELECT id, first_name, middle_name, last_name, "
+                "username, pwd_hash, is_admin FROM users WHERE username = %s",
                 (username,),
             )
             return User.from_raw(await cur.fetchone())
 
     def check_password(self, password: str):
-        return self.pwd_hash == md5(password.encode('utf-8')).hexdigest()
+        return bcrypt.checkpw(password.encode("utf-8"), self.pwd_hash.encode("utf-8"))
