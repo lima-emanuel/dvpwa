@@ -10,4 +10,41 @@ Construir uma esteira simples e reproduzível de segurança de software para o D
 
 Scan Inicial → Triagem com LLM → Remediação com LLM → Patches Manuais → Segunda Esteira de Validação
 
+## Prompt de Triagem com LLM
+
+Using the prompt triage-prompt.md and the json files at the scan-before folder, do the following tasks:
+
+- Group duplicated or equivalent findings
+- Identify probable false positives and explain them
+- Prioritize findings that look explorable on this repo
+- Choose at least 2 candidate vulnerabilities to correct
+- For each vulnerability, identify evidence, file and line numbers, probable cause and correction strategy
+
+Output:
+
+- Table with: ID, Tool, File, Severity, Decision, Justification
+- Final section: selected vulnerabilities for remediation
+
+Write your output on the llm/llm-triage.md file
+
+## Prompt de Remediação com LLM
+
+Given the triage at llm/llm-triage, do the following:
+
+- For each selected vulnerability, explain it's root cause
+- Propose a minimal and safe patch
+- Indicate which functional tests should still pass
+- Indicate a regression test that demonstrates that the exploit no longer works
+- Avoid fixes that just hide the alert without fixing the root cause
+
+Output format:
+
+- Vulnerability
+- Root cause
+- Proposed patch
+- Regression test
+- How to confirm on a second vulnerability scan
+
+Write your output on the llm/llm-remediation.md file
+
 P.S.: O README original está [aqui](__README.md).
