@@ -1,0 +1,79 @@
+name: Security Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run bandit
+        continue-on-error: true
+        run: |
+          pip install bandit
+          bandit -r . -f json -o resultados/scan-before/bandit-results.json || true
+          if [ ! -f resultados/scan-before/bandit-results.json ] || [ ! -s resultados/scan-before/bandit-results.json ]; then
+            echo '{"results": []}' > resultados/scan-before/bandit-results.json
+          fi
+
+      - name: Run semgrep
+        continue-on-error: true
+        run: |
+          pip install semgrep
+          semgrep --config=auto --json --output=resultados/scan-before/semgrep-results.json . || true
+          if [ ! -f resultados/scan-before/semgrep-results.json ] || [ ! -s resultados/scan-before/semgrep-results.json ]; then
+            echo '{"results": []}' > resultados/scan-before/semgrep-results.json
+          fi
+
+      - name: Run pip-audit
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit --format=json --output=resultados/scan-before/pip-audit-results.json || true
+          if [ ! -f resultados/scan-before/pip-audit-results.json ] || [ ! -s resultados/scan-before/pip-audit-results.json ]; then
+            echo '{"dependencies": []}' > resultados/scan-before/pip-audit-results.json
+          fi
+
+      - name: Run gitleaks
+        continue-on-error: true
+        run: |
+          curl -sSL https://github.com/zricethezav/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz | tar -xz -C /usr/local/bin gitleaks
+          gitleaks detect --source . --report-format json --report-path resultados/scan-before/gitleaks-results.json || true
+          if [ ! -f resultados/scan-before/gitleaks-results.json ] || [ ! -s resultados/scan-before/gitleaks-results.json ]; then
+            echo '[]' > resultados/scan-before/gitleaks-results.json
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: resultados/scan-before/
+
+      - name: Commit and push results
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add resultados/scan-before/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: add security scan results [skip ci]"
+            git push
+          fi

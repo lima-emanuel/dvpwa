@@ -2,15 +2,15 @@
 DVPWA -- Damn Vulnerable Python Web Application
 ===============================================
 
-.. image:: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg
+.. image:: <https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg>
    :alt: StandWithUkraine
    :align: center
-   :target: https://stand-with-ukraine.pp.ua
+   :target: <https://stand-with-ukraine.pp.ua>
 
 Description
 ===========
 
-DVPWA was inspired by famous `dvwa`_ project and `bobby-tables xkcd comics`_.
+DVPWA was inspired by famous `dvwa`_project and `bobby-tables xkcd comics`_.
 The purpose of this project is to implement real-world like application in
 Python with as many vulnerabilities as possible while having a good design and
 intentions.
@@ -32,7 +32,7 @@ using a simple command:
 
     docker-compose up
 
-Then visit http://localhost:8080 in your favorite browser.
+Then visit <http://localhost:8080> in your favorite browser.
 
 To rebuild the container, please use ``./recreate.sh`` script, which will
 delete old container and create new from scratch. This script is primarly used
@@ -54,6 +54,7 @@ If for some reasons you cannot use docker or docker-compose you can run the
 application on your host system.
 
 Requirements
+
 ~~~~~~~~~~~~
 
 - Python3.6.2
@@ -101,8 +102,7 @@ Installing and running
     # Run application
     python run.py
 
-Then visit http://localhost:8080 in your favorite browser.
-
+Then visit <http://localhost:8080> in your favorite browser.
 
 Vulnerabilities
 ===============
@@ -111,6 +111,7 @@ Session fixation
 ----------------
 
 Steps to reproduce
+
 ~~~~~~~~~~~~~~~~~~
 
 1. Open http://localhost:8080.
@@ -138,12 +139,13 @@ SQL Injection
 Steps to reproduce
 ~~~~~~~~~~~~~~~~~~
 
-1. Open http://localhost:8080.
+1. Open <http://localhost:8080>.
 2. Log in as ``superadmin:superadmin``.
-3. Go to http://localhost:8080/students/.
+3. Go to <http://localhost:8080/students/>.
 4. Add new student with the name ``Robert'); DROP TABLE students CASCADE; --``.
 
 Result
+
 ~~~~~~
 
 Table "students" is deleted from database. You observe error message, which
@@ -159,6 +161,7 @@ Stored XSS
 ----------
 
 Steps to reproduce
+
 ~~~~~~~~~~~~~~~~~~
 
 1. Open http://localhost:8080/courses/1/review.
@@ -176,7 +179,7 @@ Steps to reproduce
 6. Fill in review content with the following payload:
 
    .. code-block:: html
-      
+
       <script>
         alert('I am a stored XSS. Your cookies are: ' + document.cookie);
       </script>
@@ -222,10 +225,10 @@ Here are the problems with such approach:
   the password is, etc:
 
   .. code-block :: sql
-  
+
      sqli=# select pwd_hash, array_agg(username), count(*)
      sqli-# from "users"
-     sqli-# group by pwd_hash 
+     sqli-# group by pwd_hash
      sqli-# order by count(*) desc;
                   pwd_hash             |   array_agg    | count
      ----------------------------------+----------------+-------
