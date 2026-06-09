@@ -1,5 +1,5 @@
 import time
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -17,7 +17,13 @@ async def test_sqli_regression_student_create():
     # 1. Setup mock database connection
     conn = AsyncMock()
     cursor_mock = AsyncMock()
-    conn.cursor.return_value.__aenter__.return_value = cursor_mock
+
+    # cursor_mock acts as the async context manager
+    cursor_mock.__aenter__ = AsyncMock(return_value=cursor_mock)
+    cursor_mock.__aexit__ = AsyncMock(return_value=False)
+
+    # cursor() is synchronous in aiopg — use a regular Mock
+    conn.cursor = Mock(return_value=cursor_mock)
 
     # 2. Execute the create method with a malicious payload
     malicious_payload = "Robert'); DROP TABLE students;--"

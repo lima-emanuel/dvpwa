@@ -10,6 +10,10 @@ Construir uma esteira simples e reproduzível de segurança de software para o D
 
 Scan Inicial → Triagem com LLM → Remediação com LLM → Patches Manuais → Segunda Esteira de Validação
 
+## Reprodução
+
+Para reproduzir os resultados, basta rodar os pipelines na aba de Actions, escolher o workflow e então clicar em Run Workflow.
+
 ## Prompt de Triagem com LLM
 
 Using the prompt triage-prompt.md and the json files at the scan-before folder, do the following tasks:
@@ -46,5 +50,9 @@ Output format:
 - How to confirm on a second vulnerability scan
 
 Write your output on the llm/llm-remediation.md file
+
+## Pull Request
+
+<https://github.com/lima-emanuel/dvpwa/pull/1>
 
 P.S.: O README original está [aqui](__README.md).
